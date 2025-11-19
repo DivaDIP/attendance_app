@@ -4,7 +4,9 @@ import 'package:attendance_app/services/auth_services.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final VoidCallback onRegisterTap;
+
+  const LoginScreen({super.key, required this.onRegisterTap});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
