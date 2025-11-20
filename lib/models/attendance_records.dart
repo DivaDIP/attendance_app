@@ -41,6 +41,7 @@ class AttendanceRecords {
 
   Duration? get totalHours {
     if (checkOutTime == null) return null; {
+      // untuk menghitung jarak waktu check in dan check out
       return checkOutTime!.difference(checkInTime);
     }
   }
