@@ -1,4 +1,5 @@
 import 'package:attendance_app/models/attendance_records.dart';
+import 'package:attendance_app/screen/home/widgets/actions_button.dart';
 import 'package:attendance_app/screen/home/widgets/attendance_card.dart';
 import 'package:attendance_app/screen/home/widgets/profile_card.dart';
 import 'package:attendance_app/services/auth_services.dart';
@@ -181,7 +182,14 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 24),
               AttendanceCard(todayRecord: _todayRecord),
               SizedBox(height: 24),
-              
+              ActionButton(
+                todayRecord: _todayRecord,
+                isLoading: _isLoading,
+                onCheckIn: () => _checkIn(),
+                onCheckOut: () => _checkOut(),
+                onCheckInWithPhoto: (path) => _checkIn(photoPath: path),
+                onCheckOutWithPhoto: (path) => _checkOut(photoPath: path),
+              )
             ],
           ),
         ),
