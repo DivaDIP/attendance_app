@@ -10,23 +10,23 @@ class ActionButton extends StatelessWidget {
   final Function(String) onCheckInWithPhoto;
   final Function(String) onCheckOutWithPhoto;
 
-  const ActionButton({super.key, this.todayRecord, required this.isLoading, required this.onCheckIn, required this.onCheckOut, required this.onCheckInWithPhoto, required this.onCheckOutWithPhoto});
+  const ActionButton({super.key, required this.todayRecord, required this.isLoading, required this.onCheckIn, required this.onCheckOut, required this.onCheckInWithPhoto, required this.onCheckOutWithPhoto});
 
   @override
-  //TODO: make a logic for history
+  // TODO: Make a logic for history
 
   @override
   Widget build(BuildContext context) {
-    final hasCheckedIn = todayRecord != null;
-    final hasCheckedOut = todayRecord?.checkOutTime != null;
+    final hasCheckIn = todayRecord != null;
+    final hasCheckOut = todayRecord?.checkOutTime != null;
 
-    if (hasCheckedOut) {
+    if (hasCheckOut) {
       return _buildCompletedCard();
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: hasCheckedIn ? _buildCheckOutButtons() : _buildCheckInButtons(),
+      children: hasCheckIn ? _buildCheckOutButton() : _buildCheckInButton(),
     );
   }
 
@@ -35,10 +35,10 @@ class ActionButton extends StatelessWidget {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.0),
         child: Column(
           children: [
-            Icon(Icons.check_circle_outline, size: 64, color: Colors.green),
+            Icon(Icons.check_circle_outline_rounded, size: 64, color: Colors.green[600]),
             SizedBox(height: 16),
             Text(
               'Great job today!',
@@ -50,11 +50,11 @@ class ActionButton extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              "You've completed your work for today",
+              "You've completed your work today",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey[700]
+                color: Colors.grey[600]
               ),
             )
           ],
@@ -63,40 +63,39 @@ class ActionButton extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildCheckInButtons() {
+  List<Widget> _buildCheckInButton() {
     return [
       _ActionButton(
-        label: 'Check in without photo',
+        label: 'Check in Without Photo',
         icon: Icons.login_rounded,
         color: Colors.blue[600]!,
         onPressed: isLoading ? null : onCheckIn,
         isLoading: isLoading,
       ),
       SizedBox(height: 12),
-      _photoButton(
-        label: 'Take check in photo',
+      _PhotoButton(
+        label: 'Take Check-in Photo',
         color: Colors.blue[600]!,
-        onImageCapture: onCheckInWithPhoto,
+        onImageCaptured: onCheckInWithPhoto,
         isLoading: isLoading,
       )
     ];
   }
 
-
-  List<Widget> _buildCheckOutButtons() {
+  List<Widget> _buildCheckOutButton() {
     return [
       _ActionButton(
-        label: 'Check out without photo',
-        icon: Icons.login_rounded,
+        label: 'Check out Without Photo',
+        icon: Icons.logout_rounded,
         color: Colors.red[600]!,
         onPressed: isLoading ? null : onCheckOut,
         isLoading: isLoading,
       ),
       SizedBox(height: 12),
-      _photoButton(
-        label: 'Take check out photo',
+      _PhotoButton(
+        label: 'Take Check-out Photo',
         color: Colors.red[600]!,
-        onImageCapture: onCheckOutWithPhoto,
+        onImageCaptured: onCheckOutWithPhoto,
         isLoading: isLoading,
       )
     ];
@@ -145,15 +144,15 @@ class _ActionButton extends StatelessWidget {
           )
     );
   }
-} 
+}
 
-class _photoButton extends StatelessWidget {
+class _PhotoButton extends StatelessWidget {
   final String label;
   final Color color;
-  final Function(String) onImageCapture;
+  final Function(String) onImageCaptured;
   final bool isLoading;
 
-  const _photoButton({super.key, required this.label, required this.color, required this.onImageCapture, required this.isLoading});
+  const _PhotoButton({super.key, required this.label, required this.color, required this.onImageCaptured, required this.isLoading});
 
   @override
   Widget build(BuildContext context) {
@@ -166,9 +165,8 @@ class _photoButton extends StatelessWidget {
       ),
       child: CameraButton(
         buttonText: label,
-        onImageCaptured: onImageCapture,
+        onImageCaptured: onImageCaptured,
       ),
     );
   }
 }
-

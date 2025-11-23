@@ -1,4 +1,5 @@
 import 'package:attendance_app/models/attendance_records.dart';
+import 'package:attendance_app/screen/history/history_screen.dart';
 import 'package:attendance_app/screen/home/widgets/actions_button.dart';
 import 'package:attendance_app/screen/home/widgets/attendance_card.dart';
 import 'package:attendance_app/screen/home/widgets/profile_card.dart';
@@ -17,20 +18,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final AuthServices _authServices = AuthServices();
   final FirestoreService _firestoreService = FirestoreService();
-  final StorageService _storageService = StorageService();
+  final StorageService _storageServices = StorageService();
   AttendanceRecords? _todayRecord;
   bool _isLoading = false;
-
 
   @override
   void initState() {
     super.initState();
-    _ListenToTodayRecord;
+    _listenToTodayRecord();
   }
 
-  void _ListenToTodayRecord() {
+  // ini digunakan untuk mendengarkan semua yang terjaid di homescreen
+  void _listenToTodayRecord() {
     final user = _authServices.currentUser;
-    if (user != null) {
+    if (user != null) { // kalo usernya ada
       _firestoreService.getTodayRecordStream(user.uid).listen((record) {
         if (mounted) setState(() => _todayRecord = record);
       });
@@ -46,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       String? photoKey;
       if (photoPath != null) {
-        photoKey = await _storageService.uploadAttendancePhoto(photoPath, 'checkin');
+        photoKey = await _storageServices.uploadAttendancePhoto(photoPath, 'checkin');
       }
 
       final now = DateTime.now();
@@ -64,20 +65,20 @@ class _HomeScreenState extends State<HomeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              photoPath != null ? 'check in successfully with photo' : 'check in successfully',
+              photoPath != null 
+                ? 'Check in successfully with photo'
+                : 'Check in successfully'
             ),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 2),
           )
         );
       }
-    } catch (e) {
+    } catch (e) { // error ga berhasil check in
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'error check i: ${e.toString()}',
-            ),
+            content: Text('Error checking in: ${e.toString()}'),
             backgroundColor: Colors.red,
           )
         );
@@ -87,18 +88,18 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _checkOut({String?  photoPath}) async {
-    if (_todayRecord == null) return;
+  Future<void> _checkOut({String? photoPath}) async {
+    if (_todayRecord == null) return; 
 
     setState(() => _isLoading = true);
 
     try {
       String? photoKey;
       if (photoPath != null) {
-        photoKey = await _storageService.uploadAttendancePhoto(photoPath, 'checkout');
-        }
+        photoKey = await _storageServices.uploadAttendancePhoto(photoPath, 'checkout');
+      }
 
-        final updateRecord = AttendanceRecords(
+      final updateRecord = AttendanceRecords(
           id: _todayRecord!.id,
           userId: _todayRecord!.userId,
           checkInTime: _todayRecord!.checkInTime,
@@ -114,12 +115,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                photoPath != null 
-                ? 'checked out successfully with photo' 
-                : 'checked out successfully'
-                ),
-                backgroundColor: Colors.green,
-                duration: Duration(seconds: 2),
+                photoPath != null
+                  ? 'Checked out successfully with photo!'
+                  : 'Checked out successfully!'
+              ),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
             )
           );
         }
@@ -128,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Error checking out ${e.toString()}',
+              'Error checking out: ${e.toString()}'
             ),
             backgroundColor: Colors.red,
           )
@@ -150,16 +151,16 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.history),
-            onPressed: () {
-              // TODO: go to history screen
-            },
+            icon: Icon( Icons.history),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => HistoryScreen())
+            )
           ),
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async => await _authServices.signOut(),
           )
-        ],     
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -170,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Colors.blue[700]!,
               Colors.grey[50]!
             ],
-            stops: [0, 0, 0.3]
+            stops: [0.0, 0.3]  // posisi ditengah2
           )
         ),
         child: SingleChildScrollView(
